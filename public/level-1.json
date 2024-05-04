@@ -101,7 +101,7 @@
          "name":"colliders",
          "objects":[
                 {
-                 "height":46.6666666666667,
+                 "height":46,
                  "id":12,
                  "name":"",
                  "rotation":0,
@@ -123,7 +123,7 @@
                  "y":209.333333333333
                 }, 
                 {
-                 "height":47.3333333333333,
+                 "height":43,
                  "id":14,
                  "name":"",
                  "rotation":0,
@@ -131,7 +131,7 @@
                  "visible":true,
                  "width":95.3333333333333,
                  "x":112,
-                 "y":272
+                 "y":273
                 }, 
                 {
                  "height":110,

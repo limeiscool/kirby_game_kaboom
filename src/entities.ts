@@ -38,6 +38,7 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
 
   player.onCollide("enemy", async (enemy : GameObj) => {
     if (player.isInhaling && enemy.isInhalable) {
+      enemy.consumed = true;
       player.isInhaling = false;
       k.destroy(enemy);
       player.isFull = true;
@@ -49,21 +50,33 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
       k.go("level-1");
       return;
     }
-    player.hurt();
-    await k.tween(
-      player.opacity,
-      0,
-      0.05,
-      (val) => (player.opacity = val),
-      k.easings.linear
-    );
-    await k.tween(
-      player.opacity,
-      1,
-      0.05,
-      (val) => (player.opacity = val),
-      k.easings.linear
-    );
+    if (!enemy.consumed) {
+      player.hurt();
+      await k.tween(
+        player.opacity,
+        0,
+        0.05,
+        (val) => (player.opacity = val),
+        k.easings.linear
+      );
+      await k.tween(
+        player.opacity,
+        1,
+        0.05,
+        (val) => (player.opacity = val),
+        k.easings.linear
+      );
+    }
+  })
+
+  player.onCollideUpdate("enemy", async (enemy : GameObj) => {
+    if (player.isInhaling && enemy.isInhalable) {
+      enemy.consumed = true;
+      player.isInhaling = false;
+      k.destroy(enemy);
+      player.isFull = true;
+      return;
+    }
   })
 
   player.onCollide("exit", () => {
@@ -79,19 +92,19 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
   ]);
 
   const inahleZone = player.add([
-    k.area({ shape: new k.Rect(k.vec2(0, -4), 16, 10) }),
+    k.area({ shape: new k.Rect(k.vec2(0, -4), 18, 10) }),
     k.pos(),
     "inhaleZone",
   ])
 
   inahleZone.onUpdate(() => {
     if (player.direction === "left") {
-      inahleZone.pos = k.vec2(-16, 10);
+      inahleZone.pos = k.vec2(-12, 10);
       inhaleEffect.pos = k.vec2(player.pos.x - 60, player.pos.y + 0);
       inhaleEffect.flipX = true;
       return;
     }
-    inahleZone.pos = k.vec2(16, 10);
+    inahleZone.pos = k.vec2(12, 10);
     inhaleEffect.pos = k.vec2(player.pos.x + 60, player.pos.y + 0)
     inhaleEffect.flipX = false;
   })
@@ -211,7 +224,10 @@ export function makeFlameEnemy(k: KaboomCtx, posX: number, posY: number) {
       collisionIgnore: ["enemy"],
     }),
     k.body(),
-    k.state("idle", ["idle", "jump"]),
+    k.state("idle", ["idle", "jump"]),{
+      makeInhalable: false,
+      consumed: false,
+    },
     "enemy",
   ]);
 
@@ -241,13 +257,14 @@ export function makeGuyEnemy(k: KaboomCtx, posX: number, posY: number) {
     k.scale(scale),
     k.pos(posX * scale, posY * scale),
     k.area({
-      shape: new k.Rect(k.vec2(2, 3.9), 12, 12),
+      shape: new k.Rect(k.vec2(2, 4), 12, 12),
       collisionIgnore: ["enemy"],
     }),
     k.body(),
     k.state("idle", ["idle", "left", "right"]),
     {
       isInhalable: false,
+      consumed: false,
       speed: 100,
     },
     "enemy",
@@ -307,7 +324,10 @@ export function makeBirdEnemy(k: KaboomCtx, posX: number, posY: number, speed: n
     k.offscreen({
       destroy: true, 
       distance: 400,
-    }),
+    }),{
+      isInhalable: false,
+      consumed: false,
+    },
     "enemy",
   ])
 
