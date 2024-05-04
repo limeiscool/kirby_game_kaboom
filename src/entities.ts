@@ -20,7 +20,7 @@ type PlayerGameObj = GameObj<
 export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
   const player = k.make([
     k.sprite("assets", { anim: "kirbIdle"}),
-    k.area({ shape: new k.Rect(k.vec2(4, 5.9), 8, 10) }),
+    k.area({ shape: new k.Rect(k.vec2(3, 5.5), 10, 11), collisionIgnore: ["guy-barrier"] }),
     k.body(),
     k.pos(posX * scale, posY * scale),
     k.scale(scale),
@@ -79,19 +79,19 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
   ]);
 
   const inahleZone = player.add([
-    k.area({ shape: new k.Rect(k.vec2(0), 20, 4) }),
+    k.area({ shape: new k.Rect(k.vec2(0, -4), 16, 10) }),
     k.pos(),
     "inhaleZone",
   ])
 
   inahleZone.onUpdate(() => {
     if (player.direction === "left") {
-      inahleZone.pos = k.vec2(-14, 8);
+      inahleZone.pos = k.vec2(-16, 10);
       inhaleEffect.pos = k.vec2(player.pos.x - 60, player.pos.y + 0);
       inhaleEffect.flipX = true;
       return;
     }
-    inahleZone.pos = k.vec2(14, 8);
+    inahleZone.pos = k.vec2(16, 10);
     inhaleEffect.pos = k.vec2(player.pos.x + 60, player.pos.y + 0)
     inhaleEffect.flipX = false;
   })
@@ -156,15 +156,15 @@ export function setControls(k: KaboomCtx, player: PlayerGameObj) {
         ),
         k.scale(scale),
         player.direction === "left"
-          ? k.move(k.LEFT, 800)
-          : k.move(k.RIGHT, 800),
+          ? k.move(k.LEFT, 600)
+          : k.move(k.RIGHT, 600),
         "shootingStar",
       ]);
       shootingStar.onCollide("platform", () => {
         k.destroy(shootingStar);
       })
       player.isFull = false;
-      k.wait(0.5, () => player.play("kirbIdle"));
+      k.wait(0.25, () => player.play("kirbIdle"));
       return;
     }
 
@@ -218,12 +218,12 @@ export function makeFlameEnemy(k: KaboomCtx, posX: number, posY: number) {
   makeInhalable(k, flame);
 
   flame.onStateEnter("idle", async () => {
-    await k.wait(1);
+    await k.wait(Math.floor(((Math.random() * 3)*10)/10) + 1);
     flame.enterState("jump");
   });
 
   flame.onStateEnter("jump", async () => {
-    flame.jump(1000);
+    flame.jump(800);
   })
 
   flame.onStateUpdate("jump", async () => {
@@ -237,7 +237,7 @@ export function makeFlameEnemy(k: KaboomCtx, posX: number, posY: number) {
 
 export function makeGuyEnemy(k: KaboomCtx, posX: number, posY: number) {
   const guy = k.add([
-    k.sprite("assets", { anim: "guyWalk" }),
+    k.sprite("assets", { anim: "guyIdle" }),
     k.scale(scale),
     k.pos(posX * scale, posY * scale),
     k.area({
@@ -254,14 +254,20 @@ export function makeGuyEnemy(k: KaboomCtx, posX: number, posY: number) {
   ]);
   makeInhalable(k, guy);
   guy.onStateEnter("idle", async () => {
-    await k.wait(1);
+    guy.play("guyIdle");
+    
+    await k.wait(0.5);
+    guy.flipX = !guy.flipX
+    await k.wait(0.5)
+    if (guy.flipX) {
+      guy.enterState("right");
+      return;
+    }
     guy.enterState("left");
   });
 
   guy.onStateEnter("left", async () => {
-    guy.flipX = false;
-    await k.wait(2);
-    guy.enterState("right");
+    guy.play("guyWalk");
   });
 
   guy.onStateUpdate("left", () => {
@@ -269,14 +275,18 @@ export function makeGuyEnemy(k: KaboomCtx, posX: number, posY: number) {
   })
 
   guy.onStateEnter("right", async () => {
-    guy.flipX = true;
-    await k.wait(2);
-    guy.enterState("left");
+    guy.play("guyWalk");
   })
 
   guy.onStateUpdate("right", () => {
     guy.move(guy.speed, 0);
   });
+
+  guy.onCollide("guy-barrier", async () => {
+    guy.enterState("idle")
+  })
+  
+  
 
   return guy;
 }
@@ -287,7 +297,7 @@ export function makeBirdEnemy(k: KaboomCtx, posX: number, posY: number, speed: n
     k.scale(scale),
     k.pos(posX * scale, posY * scale),
     k.area({
-      shape: new k.Rect(k.vec2(4, 6), 8, 10),
+      shape: new k.Rect(k.vec2(4, 4), 8, 10),
       collisionIgnore: ["enemy"],
     }),
     k.body({

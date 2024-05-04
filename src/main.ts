@@ -12,9 +12,9 @@ async function gameSetup() {
       kirbFull: 2,
       kirbInhaleEffect: {from: 3, to: 8, speed: 15, loop: true },
       shootingStar: 9,
-      flame: {from: 36, to: 37, speed: 4, loop: true},
-      guyIdle: 18,
-      guyWalk: {from: 18, to: 19, speed: 4, loop: true}, 
+      flame: {from: 36, to: 37, speed: 2, loop: true},
+      guyIdle: 19,
+      guyWalk: {from: 18, to: 19, speed: 6, loop: true}, 
       bird: {from: 27, to: 28, speed: 4, loop: true},
     },
   });
@@ -58,7 +58,7 @@ async function gameSetup() {
     }
 
     for (const bird of level1SpawnPoints.bird) {
-      const possibleSpeeds = [100, 200, 300];
+      const possibleSpeeds = [100, 150, 200];
       k.loop(10, () => {
         makeBirdEnemy(k, bird.x, bird.y, possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]);
       })
