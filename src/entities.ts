@@ -50,7 +50,7 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
       k.go("level-1");
       return;
     }
-    if (!enemy.consumed) {
+    if (enemy.consumed) return;
       player.hurt();
       await k.tween(
         player.opacity,
@@ -66,7 +66,6 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
         (val) => (player.opacity = val),
         k.easings.linear
       );
-    }
   })
 
   player.onCollideUpdate("enemy", async (enemy : GameObj) => {
@@ -80,7 +79,7 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
   })
 
   player.onCollide("exit", () => {
-    k.go("level-1");
+    k.go("level-2");
   })
 
   const inhaleEffect = k.add([
@@ -110,6 +109,7 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
   })
 
   player.onUpdate(() => {
+    
     if (player.pos.y > 2000) {
       k.go("level-1");
     }
@@ -163,14 +163,14 @@ export function setControls(k: KaboomCtx, player: PlayerGameObj) {
         k.area({ shape: new k.Rect(k.vec2(5, 4), 6, 6) }),
         k.pos(
           player.direction === "left"
-            ? player.pos.x - 20
-            : player.pos.x + 20,
+            ? player.pos.x - 10
+            : player.pos.x + 10,
           player.pos.y + 5
         ),
         k.scale(scale),
         player.direction === "left"
-          ? k.move(k.LEFT, 600)
-          : k.move(k.RIGHT, 600),
+          ? k.move(k.LEFT, 650)
+          : k.move(k.RIGHT, 650),
         "shootingStar",
       ]);
       shootingStar.onCollide("platform", () => {
