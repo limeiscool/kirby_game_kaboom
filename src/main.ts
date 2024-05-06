@@ -23,6 +23,8 @@ async function gameSetup() {
 
   k.loadSprite("level-2", "./level-2.png");
 
+  k.add([k.rect(k.width(), k.height()), k.color(0, 0, 0), k.fixed()]);
+
   const {map: level1Layout, spawnPoints: level1SpawnPoints} = await makeMap(k, "level-1");
 
   const {map: level2Layout, spawnPoints: level2SpawnPoints} = await makeMap(k, "level-2");
@@ -73,7 +75,7 @@ async function gameSetup() {
   k.scene("level-2", () => {
     k.setGravity(2100);
     k.add([
-      k.rect(k.width() + 100, k.height() + 100),
+      k.rect(k.width(), k.height()),
       k.color(k.Color.fromHex("#f7d7db")),
       k.fixed(),
     ])
@@ -85,15 +87,47 @@ async function gameSetup() {
       level2SpawnPoints.Player[0].x,
       level2SpawnPoints.Player[0].y
     );
+    kirb.flipX = true;
 
     setControls(k, kirb);
 
     k.add(kirb);
 
-    k.camScale(k.vec2(0.7));
+    k.camScale(k.vec2(0.8));
     k.onUpdate(() => {
-      if (kirb.pos.x < level2Layout.pos.x + 432)
-        k.camPos(kirb.pos.x + 500, 870);
+      if (kirb.pos.x < level2Layout.pos.x + 400) {
+        if (kirb.pos.y > level2Layout.pos.y + 900) {
+          k.camPos(400, 900);
+          return
+        }
+        if (kirb.pos.y < level2Layout.pos.y + 350) {
+          k.camPos(400, 350);
+          return
+        }
+        k.camPos(400, kirb.pos.y);
+        return
+      }
+      if (kirb.pos.x > level2Layout.pos.x + 1400) {
+        if (kirb.pos.y > level2Layout.pos.y + 900) {
+          k.camPos(1400, 900);
+          return
+        }
+        if (kirb.pos.y < level2Layout.pos.y + 350) {
+          k.camPos(1400, 350);
+          return
+        }
+        k.camPos(1400, kirb.pos.y);
+        return
+      }
+      if (kirb.pos.y > level2Layout.pos.y + 900) {
+        k.camPos(kirb.pos.x, 900);
+        return
+      } 
+      if (kirb.pos.y < level2Layout.pos.y + 350) {
+        k.camPos(kirb.pos.x, 350);
+        return
+      }
+     k.camPos(kirb.pos.x, kirb.pos.y); 
     })
 
     for (const flame of level2SpawnPoints.flame) {
@@ -113,7 +147,7 @@ async function gameSetup() {
 
   });
 
-  k.go("level-1");
+  k.go("level-2");
 
 }
 
