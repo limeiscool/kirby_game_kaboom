@@ -1,4 +1,4 @@
-import { makeBirdEnemy, makeFlameEnemy, makeGuyEnemy, makePlayer, setControls } from "./entities";
+import { makeBirdEnemy, makeFlameEnemy, makeGuyEnemy, makePlayer, makeCoin, setControls } from "./entities";
 import { k } from "./kaboomCtx";
 import { makeMap } from "./utils";
 
@@ -17,6 +17,14 @@ async function gameSetup() {
       guyWalk: {from: 18, to: 19, speed: 6, loop: true}, 
       bird: {from: 27, to: 28, speed: 4, loop: true},
     },
+  });
+
+  k.loadSprite("coin", "./gold-coin.png", {
+    sliceX: 6,
+    sliceY: 1,
+    anims: {
+      coinSpin: {from: 0, to: 5, speed: 10, loop: true},
+    }
   });
 
   k.loadSprite("level-1", "./level-1.png");
@@ -49,12 +57,49 @@ async function gameSetup() {
 
     k.add(kirb);
 
-    k.camScale(k.vec2(0.7));
+    k.camScale(k.vec2(0.8));
     k.onUpdate(() => {
-      if (kirb.pos.x < level1Layout.pos.x + 432)
-        k.camPos(kirb.pos.x + 500, 870);
+      if (kirb.pos.x < level2Layout.pos.x + 400) {
+        if (kirb.pos.y > level2Layout.pos.y + 900) {
+          k.camPos(400, 900);
+          return
+        }
+        if (kirb.pos.y < level2Layout.pos.y + 350) {
+          k.camPos(400, 350);
+          return
+        }
+        k.camPos(400, kirb.pos.y);
+        return
+      }
+      if (kirb.pos.x > level2Layout.pos.x + 1400) {
+        if (kirb.pos.y > level2Layout.pos.y + 900) {
+          k.camPos(1400, 900);
+          return
+        }
+        if (kirb.pos.y < level2Layout.pos.y + 350) {
+          k.camPos(1400, 350);
+          return
+        }
+        k.camPos(1400, kirb.pos.y);
+        return
+      }
+      if (kirb.pos.y > level2Layout.pos.y + 900) {
+        k.camPos(kirb.pos.x, 900);
+        return
+      } 
+      if (kirb.pos.y < level2Layout.pos.y + 350) {
+        k.camPos(kirb.pos.x, 350);
+        return
+      }
+     k.camPos(kirb.pos.x, kirb.pos.y); 
     })
 
+    for (const bird of level1SpawnPoints.bird) {
+      const possibleSpeeds = [100, 150, 200];
+      k.loop(8, () => {
+        makeBirdEnemy(k, bird.x, bird.y, possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]);
+      })
+    }
     for (const flame of level1SpawnPoints.flame) {
       makeFlameEnemy(k, flame.x, flame.y);
     }
@@ -63,12 +108,10 @@ async function gameSetup() {
       makeGuyEnemy(k, guy.x, guy.y);
     }
 
-    for (const bird of level1SpawnPoints.bird) {
-      const possibleSpeeds = [100, 150, 200];
-      k.loop(10, () => {
-        makeBirdEnemy(k, bird.x, bird.y, possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]);
-      })
+    for (const coin of level1SpawnPoints.coin) {
+      makeCoin(k, coin.x, coin.y);
     }
+
 
   });
 
@@ -130,6 +173,13 @@ async function gameSetup() {
      k.camPos(kirb.pos.x, kirb.pos.y); 
     })
 
+    for (const bird of level2SpawnPoints.bird) {
+      const possibleSpeeds = [100, 150, 200];
+      k.loop(3, () => {
+        makeBirdEnemy(k, bird.x, bird.y, possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]);
+      })
+    }
+
     for (const flame of level2SpawnPoints.flame) {
       makeFlameEnemy(k, flame.x, flame.y);
     }
@@ -138,16 +188,14 @@ async function gameSetup() {
       makeGuyEnemy(k, guy.x, guy.y);
     }
 
-    for (const bird of level2SpawnPoints.bird) {
-      const possibleSpeeds = [100, 150, 200];
-      k.loop(10, () => {
-        makeBirdEnemy(k, bird.x, bird.y, possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]);
-      })
+    for (const coin of level2SpawnPoints.coin) {
+      makeCoin(k, coin.x, coin.y);
     }
+
 
   });
 
-  k.go("level-2");
+  k.go("level-1");
 
 }
 

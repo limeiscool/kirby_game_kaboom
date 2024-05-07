@@ -44,3 +44,7 @@ export async function makeMap(k: KaboomCtx, name: string) {
 
   return {map, spawnPoints};
 }
+
+export function getRandomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}

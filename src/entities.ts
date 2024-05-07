@@ -163,11 +163,12 @@ export function setControls(k: KaboomCtx, player: PlayerGameObj) {
         k.area({ shape: new k.Rect(k.vec2(5, 4), 6, 6) }),
         k.pos(
           player.direction === "left"
-            ? player.pos.x - 10
-            : player.pos.x + 10,
+            ? player.pos.x - 5
+            : player.pos.x + 5,
           player.pos.y + 5
         ),
         k.scale(scale),
+        k.offscreen({ destroy: true, distance: 400 }),
         player.direction === "left"
           ? k.move(k.LEFT, 650)
           : k.move(k.RIGHT, 650),
@@ -315,7 +316,7 @@ export function makeBirdEnemy(k: KaboomCtx, posX: number, posY: number, speed: n
     k.pos(posX * scale, posY * scale),
     k.area({
       shape: new k.Rect(k.vec2(4, 4), 8, 10),
-      collisionIgnore: ["enemy"],
+      collisionIgnore: ["enemy", "guy-barrier"],
     }),
     k.body({
       isStatic: true,
@@ -323,7 +324,7 @@ export function makeBirdEnemy(k: KaboomCtx, posX: number, posY: number, speed: n
     k.move(k.LEFT, speed),
     k.offscreen({
       destroy: true, 
-      distance: 400,
+      distance: 1200,
     }),{
       isInhalable: false,
       consumed: false,
@@ -334,4 +335,20 @@ export function makeBirdEnemy(k: KaboomCtx, posX: number, posY: number, speed: n
   makeInhalable(k, bird);
 
   return bird;
+}
+
+export function makeCoin(k: KaboomCtx, posX: number, posY: number) {
+  const coin = k.add([
+    k.sprite("coin", { anim: "coinSpin" }),
+    k.scale(2),
+    k.pos((posX * scale) + 18, (posY * scale) + 18),
+    k.area({
+      shape: new k.Rect(k.vec2(3, 3), 12, 12),
+    }),
+
+    k.body({ isStatic: true }),
+    "coin",
+  ])
+
+  return coin
 }
