@@ -12,3 +12,10 @@ To Run:
 - npm run dev
 
 ```
+
+# Player controls
+
+- left: a
+  -right: d
+  -jump: space
+  -inhale: j

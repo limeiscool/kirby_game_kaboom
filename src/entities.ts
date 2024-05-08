@@ -142,7 +142,7 @@ export function setControls(k: KaboomCtx, player: PlayerGameObj) {
         player.flipX = false;
         player.move(player.speed, 0);
         break;
-      case "down":
+      case "j":
         if (player.isFull) {
           player.play("kirbFull");
           inhaleEffectRef.opacity = 0;
@@ -161,7 +161,7 @@ export function setControls(k: KaboomCtx, player: PlayerGameObj) {
     player.doubleJump();
   })
 
-  k.onKeyRelease("down", () => {
+  k.onKeyRelease("j", () => {
     if (player.isFull) {
       player.play("kirbInhaling");
       const shootingStar = k.add([
