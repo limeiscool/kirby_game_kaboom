@@ -48,7 +48,8 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
 
     if (player.hp() === 0) {
       k.destroy(player);
-      k.go("level-1");
+      gameState.levelCoins = 0;
+      k.go(gameState.currentScene);
       return;
     }
     if (enemy.consumed) return;
@@ -352,6 +353,7 @@ export function makeCoin(k: KaboomCtx, posX: number, posY: number) {
     k.pos((posX * scale) + 18, (posY * scale) + 18),
     k.area({
       shape: new k.Rect(k.vec2(3, 3), 12, 12),
+      collisionIgnore: ["enemy"],
     }),
 
     k.body({ isStatic: true }),
