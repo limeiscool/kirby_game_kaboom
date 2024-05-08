@@ -16,6 +16,6 @@ To Run:
 # Player controls
 
 - left: a
-  -right: d
-  -jump: space
-  -inhale: j
+- right: d
+- jump: space
+- inhale: j
