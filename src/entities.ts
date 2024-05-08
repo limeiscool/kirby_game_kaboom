@@ -283,9 +283,9 @@ export function makeGuyEnemy(k: KaboomCtx, posX: number, posY: number) {
   guy.onStateEnter("idle", async () => {
     guy.play("guyIdle");
     
-    await k.wait(0.5);
+    await k.wait(Math.random());
     guy.flipX = !guy.flipX
-    await k.wait(0.5)
+    await k.wait(Math.random());
     if (guy.flipX) {
       guy.enterState("right");
       return;
