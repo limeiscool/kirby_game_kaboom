@@ -1,6 +1,7 @@
 import { makeBirdEnemy, makeFlameEnemy, makeGuyEnemy, makePlayer, makeCoin, setControls } from "./entities";
 import { k } from "./kaboomCtx";
-import { makeMap } from "./utils";
+import { gameState } from "./state";
+import { makeMap, getRandomNumber } from "./utils";
 
 async function gameSetup() {
   k.loadSprite("assets", "./kirby-like.png", {
@@ -38,6 +39,8 @@ async function gameSetup() {
   const {map: level2Layout, spawnPoints: level2SpawnPoints} = await makeMap(k, "level-2");
 
   k.scene("level-1", () => {
+    gameState.setCurrentScene("level-1");
+    gameState.setNextScene("level-2");
     k.setGravity(2100);
     k.add([
       k.rect(k.width(), k.height()),
@@ -96,7 +99,7 @@ async function gameSetup() {
 
     for (const bird of level1SpawnPoints.bird) {
       const possibleSpeeds = [100, 150, 200];
-      k.loop(8, () => {
+      k.loop(getRandomNumber(7, 10), () => {
         makeBirdEnemy(k, bird.x, bird.y, possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]);
       })
     }
@@ -109,6 +112,7 @@ async function gameSetup() {
     }
 
     for (const coin of level1SpawnPoints.coin) {
+      gameState.levelCoins++;
       makeCoin(k, coin.x, coin.y);
     }
 
@@ -116,6 +120,8 @@ async function gameSetup() {
   });
 
   k.scene("level-2", () => {
+    gameState.setCurrentScene("level-2");
+    gameState.setNextScene("level-1");
     k.setGravity(2100);
     k.add([
       k.rect(k.width(), k.height()),
@@ -175,7 +181,7 @@ async function gameSetup() {
 
     for (const bird of level2SpawnPoints.bird) {
       const possibleSpeeds = [100, 150, 200];
-      k.loop(3, () => {
+      k.loop(getRandomNumber(4, 8), () => {
         makeBirdEnemy(k, bird.x, bird.y, possibleSpeeds[Math.floor(Math.random() * possibleSpeeds.length)]);
       })
     }
@@ -189,6 +195,7 @@ async function gameSetup() {
     }
 
     for (const coin of level2SpawnPoints.coin) {
+      gameState.levelCoins++;
       makeCoin(k, coin.x, coin.y);
     }
 

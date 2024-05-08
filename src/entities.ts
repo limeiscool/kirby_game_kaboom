@@ -1,5 +1,6 @@
 import { AreaComp, BodyComp, DoubleJumpComp, GameObj, HealthComp, KaboomCtx, OpacityComp, PosComp, ScaleComp, SpriteComp } from "kaboom";
 import { scale } from "./constants";
+import { gameState } from "./state";
 
 type PlayerGameObj = GameObj<
   SpriteComp &
@@ -78,9 +79,15 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
     }
   })
 
-  player.onCollide("exit", () => {
-    k.go("level-2");
+  player.onCollide("coin", (coin: GameObj) => {
+    gameState.levelCoins -= 1;
+    k.destroy(coin);
   })
+
+  player.onCollide("exit", () => {
+    if (!gameState.isLevelComplete()) return;
+    k.go(gameState.nextScene);
+  });
 
   const inhaleEffect = k.add([
     k.sprite("assets", { anim: "kirbInhaleEffect"}),
@@ -111,7 +118,8 @@ export function makePlayer(k: KaboomCtx, posX: number, posY: number) {
   player.onUpdate(() => {
     
     if (player.pos.y > 2000) {
-      k.go("level-1");
+      gameState.levelCoins = 0;
+      k.go(gameState.currentScene);
     }
   });
 
